@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>趣味数学9 - 统筹规划与数列计算</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+        }
+        h2 {
+            color: #2980b9;
+            margin-top: 30px;
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
+        }
+        h3 {
+            color: #16a085;
+            margin-top: 20px;
+        }
+        .section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .rule {
+            background-color: #f1f9fe;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid #3498db;
+        }
+        .example {
+            background-color: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border: 1px solid #e0e0e0;
+        }
+        .question {
+            font-weight: bold;
+            color: #e74c3c;
+            margin: 12px 0 5px 0;
+        }
+        .answer {
+            color: #27ae60;
+            margin-left: 20px;
+            padding-left: 10px;
+            border-left: 2px solid #2ecc71;
+        }
+        
+        /* 统筹规划动画 */
+        .scheduling-animation {
+            width: 100%;
+            height: 200px;
+            position: relative;
+            margin: 20px auto;
+            background-color: #f5f7fa;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .task {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .task-1 {
+            background-color: #3498db;
+            animation: task1 4s infinite;
+        }
+        .task-2 {
+            background-color: #e74c3c;
+            animation: task2 4s infinite;
+            animation-delay: 1s;
+        }
+        .task-icon {
+            font-size: 30px;
+            color: white;
+        }
+        .task-label {
+            color: white;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        .progress-bar {
+            height: 5px;
+            background-color: rgba(255,255,255,0.5);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+        }
+        .progress {
+            height: 100%;
+            background-color: white;
+            animation: progress 4s linear infinite;
+        }
+        @keyframes task1 {
+            0%, 50% { transform: scale(1); }
+            25% { transform: scale(1.05); }
+        }
+        @keyframes task2 {
+            0%, 50% { transform: scale(1); }
+            25% { transform: scale(1.05); }
+        }
+        @keyframes progress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+        
+        /* 最短路线动画 */
+        .shortest-path-animation {
+            width: 100%;
+            height: 200px;
+            position: relative;
+            margin: 20px auto;
+            background-color: #f5f7fa;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .path-map {
+            width: 200px;
+            height: 150px;
+            position: relative;
+        }
+        .point {
+            width: 20px;
+            height: 20px;
+            border-radius: 100%;
+            background-color: #2ecc71;
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .point-a {
+            top: 30px;
+            left: 55%;
+            transform: translateX(-100%);
+        }
+        .point-b {
+            top: 80px;
+            left: 30%;
+        }
+        .point-c {
+            top: 80px;
+            right: 30%;
+        }
+        .point-d {
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .path {
+            position: absolute;
+            height: 2px;
+            background-color: #3498db;
+            transform-origin: left center;
+        }
+        .path-1 {
+            top: 50px;
+            left: 100px;
+            width: 40px;
+            transform: rotate(120deg);
+            animation: pathHighlight 3s infinite;
+        }
+        .path-2 {
+            top: 50px;
+            left: 100px;
+            width: 40px;
+            transform: rotate(-300deg);
+            animation: pathHighlight 3s infinite;
+            animation-delay: 0.5s;
+        }
+        .path-3 {
+            top: 90px;
+            left: 80px;
+            width: 40px;
+            transform: rotate(0deg);
+            animation: pathHighlight 3s infinite;
+            animation-delay: 1s;
+        }
+        @keyframes pathHighlight {
+            0%, 100% { background-color: #3498db; }
+            50% { background-color: #e74c3c; }
+        }
+		/* 调运优化动画 */
+        .transport-animation {
+            width: 100%;
+            height: 200px;
+            position: relative;
+            margin: 20px auto;
+            background-color: #f5f7fa;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .warehouse {
+            width: 60px;
+            height: 100px;
+            background-color: #3498db;
+            border-radius: 5px 5px 0 0;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 10px;
+        }
+        .warehouse-1 {
+            height: 80px;
+            background-color: #2ecc71;
+        }
+        .warehouse-2 {
+            height: 60px;
+            background-color: #e74c3c;
+        }
+        .warehouse-label {
+            color: white;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        .warehouse-price {
+            color: white;
+            font-weight: bold;
+        }
+        .truck {
+            width: 30px;
+            height: 20px;
+            background-color: #f1c40f;
+            border-radius: 5px;
+            position: absolute;
+            bottom: -20px;
+            animation: truckMove 4s infinite;
+        }
+        @keyframes truckMove {
+            0% { left: 20%; }
+            50% { left: 70%; }
+            100% { left: 20%; }
+        }
+        
+        /* 对称策略动画 */
+        .symmetry-animation {
+            width: 100%;
+            height: 200px;
+            position: relative;
+            margin: 20px auto;
+            background-color: #f5f7fa;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .board {
+            width: 180px;
+            height: 180px;
+            background-color: #8b4513;
+            border-radius: 5px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 2px;
+            padding: 5px;
+        }
+        .cell {
+            background-color: #f5deb3;
+            border-radius: 3px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+        }
+        .piece {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            animation: pieceAppear 2s infinite;
+        }
+        .piece-1 {
+            background-color: #e74c3c;
+            transform: translateX(-40px);
+        }
+        .piece-2 {
+            background-color: #3498db;
+            transform: translateX(40px);
+        }
+        @keyframes pieceAppear {
+            0%, 100% { transform: translateY(0); opacity: 1; }
+            50% { transform: translateY(-10px); opacity: 0.8; }
+        }
+        
+        /* 拿棋子游戏动画 */
+        .game-animation {
+            width: 100%;
+            height: 200px;
+            position: relative;
+            margin: 20px auto;
+            background-color: #f5f7fa;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .game-pieces {
+            display: flex;
+            gap: 10px;
+        }
+        .game-piece {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #3498db;
+            animation: pieceBounce 1s infinite;
+            animation-delay: calc(var(--delay) * 0.1s);
+        }
+        @keyframes pieceBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+      
+    </style>
+</head>
+<body>
+    <h1>趣味数学14</h1>
+    
+    <div class="section">
+        <h2>统筹规划</h2>
+        
+        <div class="scheduling-animation">
+            <div class="task task-1">
+                <div class="task-icon">👕</div>
+                <div class="task-label">洗衣</div>
+                <div class="progress-bar">
+                    <div class="progress" style="animation-duration: 3s;"></div>
+                </div>
+            </div>
+            <div class="task task-2">
+                <div class="task-icon">🍳</div>
+                <div class="task-label">做饭</div>
+                <div class="progress-bar">
+                    <div class="progress" style="animation-duration: 6s;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <h3>1. 时间安排</h3>
+        <div class="rule">
+            <strong>运算法则：</strong>并行处理不冲突的任务可以节省总时间，总用时取决于最长的任务链。
+        </div>
+        
+        <div class="example">
+            <div class="question">洗衣需要30分钟，烘干需要40分钟，可以同时进行，总用时是多少分钟</div>
+            <div class="answer">70分钟</div>
+            
+            <div class="question">做饭需要60分钟，同时煲汤需要50分钟，总用时是多少分钟</div>
+            <div class="answer">60分钟</div>
+            
+            <div class="question">两个任务分别需要30分钟和20分钟可以并行完成，总用时是多少分钟</div>
+            <div class="answer">30分钟</div>
+        </div>
+        
+        <h3>2. 最短路线</h3>
+        <div class="shortest-path-animation">
+            <div class="path-map">
+                <div class="point point-a">A</div>
+                <div class="point point-b">B</div>
+                <div class="point point-c">C</div>
+               
+                <div class="path path-1"></div>
+                <div class="path path-2"></div>
+                <div class="path path-3"></div>
+            </div>
+        </div>
+        
+        <div class="rule">
+            <strong>运算法则：</strong>使用标数法累计路径长度，选择最短路径。
+        </div>
+        
+        <div class="example">
+            <div class="question">从A到C有两条路径：10和15，最短路径长度是多少</div>
+            <div class="answer">10</div>
+            
+            <div class="question">标数法路径：1→2→3→5，路径长度是多少</div>
+            <div class="answer">5</div>
+            
+            <div class="question">三个点相连，选择最短路径的总长度是多少</div>
+            <div class="answer">取小值和</div>
+        </div>
+        
+        <h3>3. 调运优化</h3>
+        <div class="transport-animation">
+            <div class="warehouse warehouse-1">
+                <div class="warehouse-label">仓库A</div>
+                <div class="warehouse-price">¥3</div>
+                <div class="truck"></div>
+            </div>
+            <div class="warehouse warehouse-2">
+                <div class="warehouse-label">仓库B</div>
+                <div class="warehouse-price">¥5</div>
+            </div>
+        </div>
+        
+        <div class="rule">
+            <strong>运算法则：</strong>从单价最低的货源开始调运可以优化总成本。
+        </div>
+        
+        <div class="example">
+            <div class="question">A地价格低于B地，应该优先从哪里调货</div>
+            <div class="answer">A</div>
+            
+            <div class="question">单价3元与5元，运量应该优先分配给哪个</div>
+            <div class="answer">3元</div>
+            
+            <div class="question">有三个货源地点，应该选择哪个单价的</div>
+            <div class="answer">最低处</div>
+        </div>
+        
+        <h3>4. 对称策略</h3>
+        <div class="symmetry-animation">
+            <div class="board">
+                <div class="cell"></div>
+                <div class="cell"></div>
+                <div class="cell"></div>
+                <div class="cell"></div>
+                <div class="cell"></div>
+                <div class="cell"></div>
+                <div class="cell"></div>
+                <div class="cell"></div>
+                <div class="cell"></div>
+            </div>
+            <div class="piece piece-1"></div>
+            <div class="piece piece-2"></div>
+        </div>
+        
+        <div class="rule">
+            <strong>运算法则：</strong>制造对称局面可以取得游戏优势。如在五子棋、跳棋、围棋等中应用<br>在对称的局面下，玩家可以模仿对手的操作，保持不败甚至反败为胜。
+        
+        
+        <div class="example">
+            <div class="question">左右对称分配物品，最优顺序是什么</div>
+            <div class="answer">对称中心（从中心向两侧对称地扩展）</div>
+            
+            <div class="question">游戏中制造左右对称，优势方是谁</div>
+            <div class="answer">先手（先手更容易成为“引导者”，保持控制权）</div>
+            
+            <div class="question">镜像策略可以用于什么类型的游戏</div>
+            <div class="answer">对称类游戏</div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>游戏策略</h2>
+        
+        <div class="game-animation">
+            <div class="game-pieces">
+                <div class="game-piece" style="--delay: 0;"></div>
+                <div class="game-piece" style="--delay: 1;"></div>
+                <div class="game-piece" style="--delay: 2;"></div>
+                <div class="game-piece" style="--delay: 3;"></div>
+                <div class="game-piece" style="--delay: 4;"></div>
+            </div>
+        </div>
+        
+        <h3>1. 拿棋子游戏</h3>
+        <div class="rule">
+            <strong>运算法则：</strong>有若干堆棋子（或石子），每堆任意多个。两位玩家轮流操作；<br>每次从某一堆中拿走至少一个棋子，可全拿，但只能动一堆；<br>谁拿走最后一个棋子的人胜。<br>保持剩余棋子数是(k+1)的倍数可以确保胜利，其中k是每次最多能拿的棋子数。
+        </div>
+        
+        <div class="example">
+            <div class="question">总数21个棋子，每次最多拿4个，赢法是让对手面对多少个棋子</div>
+            <div class="answer">5,10,15,20</div>
+            
+            <div class="question">30个球，每次可以拿1-3个，先手获胜的第一步应该拿多少个</div>
+            <div class="answer">2个</div>
+            
+            <div class="question">每次可以拿1-5个棋子，目标应该保持剩余棋子数是多少的倍数</div>
+            <div class="answer">6的倍数</div>
+        </div>
+        
+        <h3>2. 对称性策略</h3>
+        <div class="rule">
+            <strong>运算法则：</strong>先手制造对称局面可以控制游戏进程。
+        </div>
+        
+        <div class="example">
+            <div class="question">镜像对称策略适用于什么游戏</div>
+            <div class="answer">棋盘游戏</div>
+            
+            <div class="question">取物游戏对称放置时，先手如何获胜</div>
+            <div class="answer">复制对称</div>
+            
+            <div class="question">先手制造对称局面，结果会怎样</div>
+            <div class="answer">胜面大</div>
+        </div>
+        
+        <h3>3. 最优路径</h3>
+        <div class="rule">
+            <strong>运算法则：</strong>封锁对手的关键点可以限制其行动自由。
+        </div>
+        
+        <div class="example">
+            <div class="question">封住交叉点可以限制对手的什么</div>
+            <div class="answer">移动方向</div>
+            
+            <div class="question">游戏中堵住中间点有什么作用</div>
+            <div class="answer">卡死路径</div>
+            
+            <div class="question">对方想走ABC路径，封住B点会怎样</div>
+            <div class="answer">有效阻止</div>
+        </div>
+    </div>
+    
+   
+    </div>
+</body>
+</html>
